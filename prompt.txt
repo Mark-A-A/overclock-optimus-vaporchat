@@ -1,0 +1,48 @@
+CapThat Application Specification
+
+I. Goal:
+- build a basic (local) Chrome extension. 
+- Next.js project code-base you can install and run on Chrome via said extension.
+
+II. Functionality:
+1. Chrome Browser Image capture Button
+- allows user to capture an image on the webpage that they are on 
+- add button overlay, similar to Chatbot features in the browser, to the bottom right of every image, giving user 
+to save screenshot on click
+- saves images within Chrome browser internal local storage
+- loading/waiting state while screenshot is being svaed
+
+2. Saved Images Dropdown
+- show all screenshot images from browser local storage in grid format
+- Grid is mobile responsive
+- ability to delete/clear board via deletion of selected  images, or all at once
+- option to delete on download
+- download selected individual images, or all
+- options for image type i.e. jpeg, png, pdf
+- Ability to group images by page, mood, category, topic
+- export JSON
+
+
+
+III. UI/UX 
+- Reference capthat_spec.png for example browser UI. 
+- The boxes with "Cap" button are example HTML rendered pages
+ in the browser with extension button overlay with click functionlaity
+- The Cap Dashboard is an example chrome extension dropdown that loads 
+when the extension button is clicked in drop down popover
+- the dropdown contains and displays all current images Saved
+- at the bottom of the dropdown, the 4 buttons are avialble to click:
+1. clear all saved images
+2. export JSON
+3. export/download all images to folder on computer
+4. export/download selected images to folder on computer
+
+
+IV. Color Scheme:
+Use this color theme:
+https://coolors.co/d7263d-02182b-0197f6-448fa3-68c5db
+#68C5DB - main color of the extension
+ #0197F6 - primary color of the image capture button
+ #02182B - border of the dropdown
+ #448FA3 - button color for exporting, download
+ #D7263D - button for any deletions
