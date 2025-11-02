@@ -25,7 +25,7 @@ to save screenshot on click
 
 
 III. UI/UX 
-- Reference capthat_spec.png for example browser UI. 
+- Reference `capthat_spec.png` for example browser UI. 
 - The boxes with "Cap" button are example HTML rendered pages
  in the browser with extension button overlay with click functionlaity
 - The Cap Dashboard is an example chrome extension dropdown that loads 

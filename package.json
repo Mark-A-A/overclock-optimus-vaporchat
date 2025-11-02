@@ -1,0 +1,37 @@
+{
+  "name": "capthat-extension",
+  "version": "1.0.0",
+  "description": "CapThat - Chrome Extension for capturing and managing webpage screenshots",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "build:extension": "npm run icons && next build && npm run copy:files && npm run fix:underscore",
+    "icons": "node scripts/create-icons.js",
+    "fix:underscore": "node scripts/fix-paths.js && mv out/_next out/next",
+    "copy:files": "cp manifest.json out/ && cp public/content.js out/ && cp public/content.css out/ && cp -r public/icons out/"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "html2canvas": "^1.4.1",
+    "jszip": "^3.10.1",
+    "file-saver": "^2.0.5"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/file-saver": "^2.0.5",
+    "typescript": "^5.0.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5"
+  }
+}
+

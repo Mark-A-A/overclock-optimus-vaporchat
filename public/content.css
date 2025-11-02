@@ -1,0 +1,57 @@
+/* Content script styles for Cap buttons */
+
+.capthat-container {
+  position: relative;
+  display: inline-block;
+}
+
+.capthat-button {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: #0197F6;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  z-index: 999999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.capthat-button:hover {
+  transform: scale(1.1);
+  background-color: #68C5DB;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.capthat-button:active {
+  transform: scale(0.95);
+}
+
+.capthat-button.capthat-loading {
+  animation: pulse 1s infinite;
+  cursor: wait;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Ensure images in containers maintain their original styling */
+.capthat-container img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
