@@ -71,18 +71,41 @@
       button.classList.add(LOADING_CLASS);
       button.textContent = 'Saving...';
       
-      // Create canvas to capture the image
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth || img.width;
-      canvas.height = img.naturalHeight || img.height;
+      let dataUrl;
       
-      const ctx = canvas.getContext('2d');
-      
-      // Handle CORS issues by trying to load the image
-      const imgData = await getImageData(img, canvas, ctx);
-      
-      // Convert to base64
-      const dataUrl = canvas.toDataURL('image/png');
+      // Try to fetch the image as a blob to handle CORS
+      try {
+        const response = await fetch(img.src);
+        const blob = await response.blob();
+        
+        // Convert blob to base64
+        dataUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      } catch (fetchError) {
+        // If fetch fails (CORS), try canvas method for same-origin images
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth || img.width;
+        canvas.height = img.naturalHeight || img.height;
+        
+        const ctx = canvas.getContext('2d');
+        
+        // For same-origin images, this should work
+        const tempImg = new Image();
+        tempImg.crossOrigin = 'anonymous';
+        
+        await new Promise((resolve, reject) => {
+          tempImg.onload = resolve;
+          tempImg.onerror = reject;
+          tempImg.src = img.src;
+        });
+        
+        ctx.drawImage(tempImg, 0, 0);
+        dataUrl = canvas.toDataURL('image/png');
+      }
       
       // Save to Chrome storage
       const captureData = {
@@ -92,8 +115,8 @@
         pageTitle: document.title,
         timestamp: new Date().toISOString(),
         imgSrc: img.src,
-        width: canvas.width,
-        height: canvas.height
+        width: img.naturalWidth || img.width,
+        height: img.naturalHeight || img.height
       };
       
       // Store in Chrome storage
@@ -127,32 +150,6 @@
     }
   }
 
-  // Get image data handling CORS
-  function getImageData(img, canvas, ctx) {
-    return new Promise((resolve, reject) => {
-      // Try to draw directly first
-      try {
-        ctx.drawImage(img, 0, 0);
-        resolve();
-      } catch (e) {
-        // If CORS error, try to load via fetch
-        fetch(img.src)
-          .then(response => response.blob())
-          .then(blob => {
-            const url = URL.createObjectURL(blob);
-            const newImg = new Image();
-            newImg.onload = () => {
-              ctx.drawImage(newImg, 0, 0);
-              URL.revokeObjectURL(url);
-              resolve();
-            };
-            newImg.onerror = reject;
-            newImg.src = url;
-          })
-          .catch(reject);
-      }
-    });
-  }
 
   // Initialize when DOM is ready
   if (document.readyState === 'loading') {

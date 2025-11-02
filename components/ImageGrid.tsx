@@ -17,7 +17,7 @@ export default function ImageGrid({
   const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   return (
-    <div className="grid grid-cols-5 gap-3">
+    <div className="grid grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3">
       {captures.map((capture) => {
         const captureId = capture.id.toString()
         const isSelected = selectedIds.has(captureId)
