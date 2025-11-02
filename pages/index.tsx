@@ -63,19 +63,42 @@ export default function Popup() {
       return
     }
 
-    // Create a zip file with all images
-    const JSZip = (await import('jszip')).default
-    const FileSaver = await import('file-saver')
-    const zip = new JSZip()
+    try {
+      // Create a zip file with all images
+      const JSZip = (await import('jszip')).default
+      const zip = new JSZip()
 
-    captures.forEach((capture, index) => {
-      const base64Data = capture.dataUrl.split(',')[1]
-      zip.file(`capture-${index + 1}.png`, base64Data, { base64: true })
-    })
+      captures.forEach((capture, index) => {
+        const base64Data = capture.dataUrl.split(',')[1]
+        zip.file(`capture-${index + 1}.png`, base64Data, { base64: true })
+      })
 
-    zip.generateAsync({ type: 'blob' }).then((content) => {
-      FileSaver.saveAs(content, `capthat-board-${Date.now()}.zip`)
-    })
+      const content = await zip.generateAsync({ type: 'blob' })
+      
+      // Convert blob to data URL for Chrome download
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const dataUrl = reader.result as string
+        
+        if (typeof chrome !== 'undefined' && chrome.downloads) {
+          chrome.downloads.download({
+            url: dataUrl,
+            filename: `capthat-board-${Date.now()}.zip`,
+            saveAs: true
+          })
+        } else {
+          // Fallback for development
+          const link = document.createElement('a')
+          link.href = dataUrl
+          link.download = `capthat-board-${Date.now()}.zip`
+          link.click()
+        }
+      }
+      reader.readAsDataURL(content)
+    } catch (error) {
+      console.error('Export failed:', error)
+      alert('Failed to export images')
+    }
   }
 
   const handleExportSelected = async () => {
@@ -84,22 +107,45 @@ export default function Popup() {
       return
     }
 
-    const JSZip = (await import('jszip')).default
-    const FileSaver = await import('file-saver')
-    const zip = new JSZip()
+    try {
+      const JSZip = (await import('jszip')).default
+      const zip = new JSZip()
 
-    const selectedCaptures = captures.filter((cap) =>
-      selectedIds.has(cap.id.toString())
-    )
+      const selectedCaptures = captures.filter((cap) =>
+        selectedIds.has(cap.id.toString())
+      )
 
-    selectedCaptures.forEach((capture, index) => {
-      const base64Data = capture.dataUrl.split(',')[1]
-      zip.file(`capture-${index + 1}.png`, base64Data, { base64: true })
-    })
+      selectedCaptures.forEach((capture, index) => {
+        const base64Data = capture.dataUrl.split(',')[1]
+        zip.file(`capture-${index + 1}.png`, base64Data, { base64: true })
+      })
 
-    zip.generateAsync({ type: 'blob' }).then((content) => {
-      FileSaver.saveAs(content, `capthat-selected-${Date.now()}.zip`)
-    })
+      const content = await zip.generateAsync({ type: 'blob' })
+      
+      // Convert blob to data URL for Chrome download
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const dataUrl = reader.result as string
+        
+        if (typeof chrome !== 'undefined' && chrome.downloads) {
+          chrome.downloads.download({
+            url: dataUrl,
+            filename: `capthat-selected-${Date.now()}.zip`,
+            saveAs: true
+          })
+        } else {
+          // Fallback for development
+          const link = document.createElement('a')
+          link.href = dataUrl
+          link.download = `capthat-selected-${Date.now()}.zip`
+          link.click()
+        }
+      }
+      reader.readAsDataURL(content)
+    } catch (error) {
+      console.error('Export selected failed:', error)
+      alert('Failed to export selected images')
+    }
   }
 
   const handleDeleteSelected = () => {
