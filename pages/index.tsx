@@ -131,7 +131,7 @@ export default function Popup() {
       <Head>
         <title>CapThat!</title>
       </Head>
-      <div style={{ width: '80vw', height: '50vh' }} className="min-w-[600px] max-w-[1400px] min-h-[400px] max-h-[700px] bg-capthat-primary flex flex-col">
+      <div className="w-[500px] h-[700px] bg-capthat-primary flex flex-col">
         {/* Header */}
         <div className="bg-capthat-dark text-white py-4 px-6">
           <h1 className="text-2xl font-bold text-center">CapThat!</h1>
