@@ -9,7 +9,7 @@
     "build:extension": "npm run icons && next build && npm run copy:files && npm run fix:underscore",
     "icons": "node scripts/create-proper-icons.js",
     "fix:underscore": "node scripts/fix-paths.js && mv out/_next out/next",
-    "copy:files": "cp manifest.json out/ && cp public/content.js out/ && cp public/content.css out/ && cp -r public/icons out/"
+    "copy:files": "cp manifest.json out/ && cp public/content.js out/ && cp public/content.css out/ && cp public/background.js out/ && cp -r public/icons out/"
   },
   "engines": {
     "node": ">=18.17.0"

@@ -73,38 +73,57 @@
       
       let dataUrl;
       
-      // Try to fetch the image as a blob to handle CORS
+      // Method 1: Try fetching from extension context (bypasses CORS)
       try {
-        const response = await fetch(img.src);
-        const blob = await response.blob();
-        
-        // Convert blob to base64
+        // Ask the extension background to fetch the image
         dataUrl = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
+          chrome.runtime.sendMessage(
+            { action: 'fetchImage', url: img.src },
+            (response) => {
+              if (response && response.dataUrl) {
+                resolve(response.dataUrl);
+              } else {
+                reject(new Error('Failed to fetch from extension'));
+              }
+            }
+          );
         });
-      } catch (fetchError) {
-        // If fetch fails (CORS), try canvas method for same-origin images
-        const canvas = document.createElement('canvas');
-        canvas.width = img.naturalWidth || img.width;
-        canvas.height = img.naturalHeight || img.height;
+      } catch (extensionError) {
+        console.log('CapThat: Extension fetch failed, trying direct fetch...', extensionError);
         
-        const ctx = canvas.getContext('2d');
-        
-        // For same-origin images, this should work
-        const tempImg = new Image();
-        tempImg.crossOrigin = 'anonymous';
-        
-        await new Promise((resolve, reject) => {
-          tempImg.onload = resolve;
-          tempImg.onerror = reject;
-          tempImg.src = img.src;
-        });
-        
-        ctx.drawImage(tempImg, 0, 0);
-        dataUrl = canvas.toDataURL('image/png');
+        // Method 2: Try direct fetch (works for some images)
+        try {
+          const response = await fetch(img.src);
+          const blob = await response.blob();
+          
+          dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } catch (fetchError) {
+          console.log('CapThat: Direct fetch failed, trying canvas...', fetchError);
+          
+          // Method 3: Try canvas for same-origin images
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          
+          const ctx = canvas.getContext('2d');
+          
+          const tempImg = new Image();
+          tempImg.crossOrigin = 'anonymous';
+          
+          await new Promise((resolve, reject) => {
+            tempImg.onload = resolve;
+            tempImg.onerror = reject;
+            tempImg.src = img.src;
+          });
+          
+          ctx.drawImage(tempImg, 0, 0);
+          dataUrl = canvas.toDataURL('image/png');
+        }
       }
       
       // Save to Chrome storage
